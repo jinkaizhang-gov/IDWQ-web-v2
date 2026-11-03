@@ -1,0 +1,50 @@
+name: Import tested IDWQ V2 to preview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/import-v2.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out preview repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Clone tested V2 source
+        run: |
+          git clone --depth 1 --single-branch --branch improvements-v2 https://github.com/jinkaizhang-gov/IDWQ-web.git /tmp/idwq-v2-source
+      - name: Copy website and validate data
+        run: |
+          rsync -a --delete --exclude='.git/' /tmp/idwq-v2-source/ ./
+          test -f index.html
+          test -f app.html
+          test -f data/WQ_SiteData.json
+          test -f data/siteData/manifest.json
+          test -f tests/browser-smoke.cjs
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest=json.loads(Path('data/siteData/manifest.json').read_text())
+          assert manifest['sourceRecords']==5395
+          assert manifest['unknownRecords']==0
+          assert sum(v['records'] for v in manifest['districts'].values())==5395
+          print('Validated',len(manifest['districts']),'district partitions')
+          PY
+      - name: Commit all files to preview main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Import tested IDWQ improvements-v2 website"
+            git push origin HEAD:main
+          fi
