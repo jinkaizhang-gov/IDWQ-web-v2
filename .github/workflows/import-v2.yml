@@ -24,12 +24,13 @@ jobs:
           git clone --depth 1 --single-branch --branch improvements-v2 https://github.com/jinkaizhang-gov/IDWQ-web.git /tmp/idwq-v2-source
       - name: Copy website and validate data
         run: |
-          rsync -a --delete --exclude='.git/' /tmp/idwq-v2-source/ ./
+          rsync -a --delete --exclude='.git/' --exclude='.github/workflows/' /tmp/idwq-v2-source/ ./
           test -f index.html
           test -f app.html
           test -f data/WQ_SiteData.json
           test -f data/siteData/manifest.json
           test -f tests/browser-smoke.cjs
+          test ! -f .github/workflows/browser-smoke.yml
           python3 - <<'PY'
           import json
           from pathlib import Path
