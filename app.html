@@ -30,6 +30,16 @@
   <body>
     <div id="container">
       <div id="sidePanel">
+        <header id="appPanelHeader">
+          <div class="app-panel-brand">
+            <span class="material-symbols-outlined" aria-hidden="true">water_drop</span>
+            <span>IDWQ Data Tool</span>
+          </div>
+          <a id="homeLink" href="./index.html" aria-label="Return to landing page" title="Return to landing page">
+            <span class="material-symbols-outlined" aria-hidden="true">home</span>
+            <span>Home</span>
+          </a>
+        </header>
         <div id="tabs">
           <div class="tab active" data-target="intro">
             <span class="material-symbols-outlined">info</span>
@@ -59,10 +69,6 @@
       </div>
 
       <div id="mapView">
-        <a id="homeLink" href="./index.html" aria-label="Return to landing page" title="Return to landing page">
-          <span class="material-symbols-outlined" aria-hidden="true">home</span>
-          <span>Home</span>
-        </a>
         <div id="mapLayersPanel" class="hidden">
           <div class="map-control-card">
             <b>Basemap</b><br />
