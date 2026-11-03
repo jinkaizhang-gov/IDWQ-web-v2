@@ -66,6 +66,8 @@ let activePage;
   assert(await page.locator('#mapView').isVisible());
   console.log('PASS: mobile viewport renders map');
   const homeLink = page.locator('#homeLink');
+  assert.equal(await page.locator('#sidePanel #appPanelHeader #homeLink').count(), 1, 'Home belongs inside the left panel header');
+  assert.equal(await page.locator('#mapView #homeLink').count(), 0, 'Map must not contain Home button');
   assert(await homeLink.isVisible(), 'Home button must be visible on mobile');
   assert.equal(await homeLink.getAttribute('href'), './index.html');
   await homeLink.click();
