@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-03T05:11:04+00:00",
+  "sourceRecords": 5395,
+  "unknownRecords": 0,
+  "multiDistrictRecords": 0,
+  "siteLookupFallbackRecords": 0,
+  "ambiguousSiteMatches": 0,
+  "districts": {
+    "AEP CANALS": {
+      "file": "AEP_CANALS.json",
+      "records": 110
+    },
+    "AID": {
+      "file": "AID.json",
+      "records": 77
+    },
+    "BRID": {
+      "file": "BRID.json",
+      "records": 708
+    },
+    "EID": {
+      "file": "EID.json",
+      "records": 1060
+    },
+    "LNID": {
+      "file": "LNID.json",
+      "records": 717
+    },
+    "MID": {
+      "file": "MID.json",
+      "records": 201
+    },
+    "MVID": {
+      "file": "MVID.json",
+      "records": 136
+    },
+    "RCID": {
+      "file": "RCID.json",
+      "records": 12
+    },
+    "RID": {
+      "file": "RID.json",
+      "records": 195
+    },
+    "SMRID": {
+      "file": "SMRID.json",
+      "records": 1412
+    },
+    "UID": {
+      "file": "UID.json",
+      "records": 253
+    },
+    "WID": {
+      "file": "WID.json",
+      "records": 514
+    }
+  }
+}
