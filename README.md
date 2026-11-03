@@ -1,177 +1,141 @@
-# Irrigation District Water Quality Portal
+# Irrigation District Water Quality (IDWQ) — V2 Preview
 
-A static web application for exploring irrigation district water-quality information, viewing Water Quality (WQ) index summaries, mapping monitoring sites, and downloading measurement data.
+A static web application for exploring Alberta irrigation-district water-quality monitoring sites, viewing Water Quality (WQ) Index results, and downloading laboratory measurement data.
 
-## Live site
+This repository is the **independent V2 preview** copied from the tested `improvements-v2` branch of [IDWQ-web](https://github.com/jinkaizhang-gov/IDWQ-web). It lets the updated application be tested without changing the original production site.
 
-GitHub Pages:
+## Websites
 
-https://jinkaizhang-gov.github.io/IDWQ-web/
+| Environment | URL | Repository / branch |
+| --- | --- | --- |
+| V1 production | https://jinkaizhang-gov.github.io/IDWQ-web/ | `IDWQ-web` / `master` |
+| V2 preview | https://jinkaizhang-gov.github.io/IDWQ-web-v2/ | `IDWQ-web-v2` / `main` |
 
-The site is deployed from the `master` branch at the repository root.
+**Note:** The V2 URL works only after GitHub Pages has been enabled and its deployment succeeds. Copying the files into the repository does not automatically confirm Pages is active.
 
-## Technology
+## What's improved in V2
 
-The application is intentionally lightweight and does not require a front-end framework or build process.
+- **Smaller district downloads:** Laboratory data are partitioned by irrigation district, so selecting a district downloads its smaller JSON file rather than fetching the entire source dataset.
+- **Complete exports remain available:** The full measurement-data download continues to read `data/WQ_SiteData.json`; this includes records from sites not represented on the map.
+- **Robust CSV exports:** Handles commas, quotation marks, and newlines in measurement and WQ Index values.
+- **Error handling and status:** Reports data-loading and download issues, and shows the preparation date of partition files (not the underlying water-quality observation date).
+- **Accessibility:** Keyboard-operable tabs, site buttons, and side-panel controls.
+- **Responsive layout:** On narrow screens the data panel and Leaflet map stack vertically, keeping the map visible.
 
-- HTML
-- CSS
-- JavaScript (ES modules)
-- Leaflet 1.9.4
-- GeoJSON / JSON data
-- Python / ArcPy utilities for preparing data
+## Dataset and sources
+
+The packaged dataset contains **5,395 measurement records** distributed across **12 district JSON files** with **0 unknown records**, verified against `data/siteData/manifest.json` when this preview was copied.
+
+| File | Purpose |
+| --- | --- |
+| `data/WQ_SiteData.json` | Canonical, complete raw laboratory measurement dataset |
+| `data/siteData/manifest.json` | District-to-file lookup, counts, and file-generation timestamp |
+| `data/siteData/*.json` | Compact per-district measurement files |
+| `data/WQ_Sites.geojson` | Monitoring-site information; fallback district lookup in the partition generator |
+| `data/WQ_Sites_Merged.json` | Map site geometries, attributes and WQ Index records used by the web application |
+| `data/ReportingAreas.json` | Reporting-area geographic features |
+| `data/fieldJson.json` | Measurement-field labels, units, and guidelines |
+
+**District assignment:** `py/split_site_data.py` uses the measurement record's `IrrDist` value first. When that value is missing, it matches `Site` to `SiteName` in `WQ_Sites.geojson`. Each measurement record is assigned to exactly one district. `WQ_Sites_Merged.json` is **not** used by the splitting script, but is still needed for the website map and WQ Index.
+
+The partition generation timestamp is **not** the last sampling date or an assurance that laboratory results are up-to-date.
 
 ## Project structure
 
 ```text
-IDWQ-web/
-├── index.html              # Landing page
-├── app.html                # Main mapping/data application
-├── css/
-│   └── style.css           # Application styles
-├── js/
-│   ├── app.js              # Main application initialization
-│   ├── constants.js        # File paths, field names, basemaps, constants
-│   ├── dataTab.js          # Measurement-data tab logic
-│   ├── downloads.js        # CSV/data download functions
-│   ├── filters.js          # District/year filtering
-│   ├── mapInit.js          # Leaflet map initialization
-│   ├── mapPoints.js        # Monitoring-site markers and popups
-│   ├── mapStyles.js        # Map styling helpers
-│   ├── state.js            # Shared application state
-│   └── tabs.js             # Tab loading/navigation
+IDWQ-web-v2/
+├── index.html                  # Portal landing page
+├── app.html                    # Leaflet map and data application
+├── css/style.css               # Desktop and mobile styling
+├── js/                         # JavaScript ES modules
+│   ├── app.js                  # Application startup
+│   ├── constants.js            # Source file paths, fields and map configuration
+│   ├── downloads.js            # CSV exports and district-partition retrieval
+│   ├── filters.js              # District/year selection
+│   ├── dataTab.js              # Site list and keyboard-accessible zoom
+│   └── tabs.js                 # Tab navigation and content loading
 ├── data/
-│   ├── WQ_Sites.geojson    # Monitoring-site geometry
-│   ├── WQ_Sites_Merged.json
-│   ├── WQ_SiteData.json    # Detailed measurement data
-│   ├── ReportingAreas.json
-│   ├── WQ_Index.geojson
-│   └── fieldJson.json      # Field names, units, and metadata
-├── tabs/
-│   ├── intro.html
-│   ├── wq.html
-│   ├── data.html
-│   ├── pubs.html
-│   ├── districtNames.json
-│   └── guidelines.json
-├── images/
-├── sitePhotos/
-└── py/                     # Data-preparation scripts
+│   ├── WQ_SiteData.json        # Full measurement dataset
+│   ├── WQ_Sites.geojson        # Site lookup source for data generation
+│   ├── WQ_Sites_Merged.json    # Site/map/WQ Index data
+│   └── siteData/
+│       ├── manifest.json      # District file manifest
+│       └── *.json             # 12 generated district files
+├── tabs/                       # Intro, Data, WQ Index and Publications tabs
+├── images/                     # Logos and interface assets
+├── sitePhotos/                 # Monitoring-site photographs
+├── py/split_site_data.py       # Regenerate partitions (Python standard library)
+├── tests/browser-smoke.cjs     # Playwright / Chromium smoke tests
+└── README-V2.md                # Development notes and validation history
 ```
 
-## Main data files
+## Deploy the V2 preview using GitHub Pages
 
-### `WQ_Sites.geojson`
+In this **IDWQ-web-v2** repository, open **Settings → Pages** and configure:
 
-Monitoring-site point geometry and site attributes.
+- **Source:** Deploy from a branch
+- **Branch:** `main`
+- **Folder:** `/ (root)`
 
-This file is intentionally retained with a `.geojson` extension.
+Save, then check the **Actions** tab for the GitHub Pages build and deployment result. After a successful deployment, use the V2 preview URL above.
 
-### `WQ_Sites_Merged.json`
+The repository is public; GitHub Pages content and the committed data are publicly accessible. Only publish information approved for public release.
 
-Site information combined with WQ index records for use by the web application.
+## Run locally
 
-### `WQ_SiteData.json`
-
-Detailed water-quality measurement records used by the data tab and download functions.
-
-This is currently the largest application data file.
-
-### `ReportingAreas.json`
-
-Reporting-area polygon geometry.
-
-### `fieldJson.json`
-
-Metadata used to provide user-friendly field names, units, and related information.
-
-## Application flow
-
-At startup, `app.html` loads the JavaScript modules and application configuration.
-
-The application then:
-
-1. Initializes the Leaflet map.
-2. Loads field metadata and irrigation-district information.
-3. Loads site and WQ index data.
-4. Creates site markers and map layers.
-5. Builds district/year filters.
-6. Loads tab content as required.
-7. Loads detailed measurement data when needed for data viewing or downloads.
-
-## Running locally
-
-Because the application uses `fetch()` to load local JSON and HTML files, opening `index.html` directly with a `file://` URL may not work correctly.
-
-Run a small local HTTP server from the repository root instead.
-
-Python example:
+The application uses `fetch()` for JSON and HTML. Serve the repository over HTTP instead of opening `index.html` as a `file://` URL:
 
 ```bash
 python -m http.server 8000
 ```
 
-Then open:
+Then open `http://localhost:8000/` for the landing page or `http://localhost:8000/app.html` for the tool.
 
-```text
-http://localhost:8000/
+Basemap tiles and some mapping libraries are requested from external services, so an internet connection is needed for the normal map experience.
+
+## Regenerate measurement partitions
+
+Run from the repository root:
+
+```bash
+python py/split_site_data.py
 ```
 
-or:
+This updates `data/siteData/manifest.json` and the district JSON files, retains the original full dataset, and removes obsolete generated partitions. Verify that the manifest's district counts sum to `sourceRecords` and inspect any `unknownRecords` or ambiguous site matches before publishing an update.
 
-```text
-http://localhost:8000/app.html
+Unlike the source development branch, **this preview repository does not include the copied browser-test or partition-generation GitHub Actions workflow definitions**. They were omitted during import due to GitHub workflow permission restrictions. The Python generator and the browser-test script themselves are included.
+
+## Browser tests
+
+The source V2 branch passed a real Chromium smoke test covering application and map startup, keyboard navigation, BRID district downloads, full-data CSV download, WQ Index CSV export, a 390px mobile viewport, and uncaught JavaScript errors.
+
+[Successful source-branch browser test](https://github.com/jinkaizhang-gov/IDWQ-web/actions/runs/41583727049)
+
+To run the same browser test manually from this repository:
+
+```bash
+npm install --no-save playwright@1.58.2
+npx playwright install chromium
+python -m http.server 8000
 ```
 
-## Deployment
+In a separate terminal:
 
-The current deployment uses GitHub Pages.
-
-Configuration:
-
-- Source: Deploy from a branch
-- Branch: `master`
-- Folder: `/ (root)`
-- HTTPS: enabled
-
-Changes pushed to `master` are automatically published by GitHub Pages.
-
-Deployment status can be checked from the repository's **Actions** tab under **pages build and deployment**.
-
-## Data preparation
-
-The `py/` directory contains Python/ArcPy utilities used to convert source GIS and water-quality datasets into files consumed by the web application.
-
-Current scripts include:
-
-- `SiteData2Json.py`
-- `WQ2Json.py`
-- `ToGeojson_batch.py`
-- `fc2Geojson.py`
-- `merge_site_index.py`
-
-These scripts are data-preparation tools and are not executed by the website.
-
-## Data-file naming convention
-
-Most application data is served using a `.json` extension for compatibility with normal browser/web-server requests.
-
-The exception is:
-
-```text
-WQ_Sites.geojson
+```bash
+node tests/browser-smoke.cjs
 ```
 
-which is intentionally kept as GeoJSON.
+These automated checks supplement, but do not replace, reviewing the deployed preview in a browser and verifying downloaded records.
 
-## Notes for maintainers
+## Maintaining V1 and V2
 
-- Keep relative file paths intact so the application works under the GitHub Pages project path `/IDWQ-web/`.
-- Avoid root-absolute paths such as `/data/file.json` unless deployment behavior is explicitly accounted for.
-- When data-generation scripts are updated, verify that their output filenames match the files referenced in `js/constants.js`.
-- After updating data, test the map, district/year filters, WQ index tab, data tab, and CSV download functions.
-- The detailed measurement file is relatively large, so future optimization may include splitting data by irrigation district or another logical partition.
+- Make preview changes in `IDWQ-web-v2/main` or continue development in `IDWQ-web/improvements-v2` and explicitly sync approved changes here.
+- Publishing or editing this repository does **not** automatically update the V1 production repository.
+- Use relative file paths so the site works beneath the GitHub Pages project URL `/IDWQ-web-v2/`.
+- Compare district exports with the canonical measurement file before releasing refreshed datasets.
+- Do not copy private, licensed, or internal-only files into this public repository.
 
-## Repository
+## Related repositories
 
-https://github.com/jinkaizhang-gov/IDWQ-web
+- [IDWQ-web — original production and improvements-v2 branch](https://github.com/jinkaizhang-gov/IDWQ-web)
+- [IDWQ-web-v2 — this independent preview repository](https://github.com/jinkaizhang-gov/IDWQ-web-v2)
