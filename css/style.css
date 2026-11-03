@@ -787,3 +787,30 @@ html, body {
     }
     .tab { min-width: 0; }
 }
+
+/* Home link remains available even when the side panel is collapsed. */
+#homeLink {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1100;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 13px;
+    border: 1px solid #0068a0;
+    border-radius: 6px;
+    background: #fff;
+    color: #005691;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+#homeLink .material-symbols-outlined { font-size: 20px; }
+#homeLink:hover { background: #e6f2f8; }
+#homeLink:focus-visible { outline: 3px solid #ffbf47; outline-offset: 2px; }
+@media (max-width: 640px) {
+    #homeLink { top: 8px; right: 8px; padding: 7px 10px; }
+}
