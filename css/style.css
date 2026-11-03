@@ -788,29 +788,53 @@ html, body {
     .tab { min-width: 0; }
 }
 
-/* Home link remains available even when the side panel is collapsed. */
+/* Compact application header: website navigation stays separate from map controls. */
+#appPanelHeader {
+    flex: 0 0 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    box-sizing: border-box;
+    padding: 4px 12px 4px 18px;
+    background: #f5f9fc;
+    border-bottom: 1px solid #cbdce8;
+}
+.app-panel-brand {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #003b64;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.app-panel-brand .material-symbols-outlined {
+    color: #0078c9;
+    font-size: 21px;
+}
 #homeLink {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 1100;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 9px 13px;
-    border: 1px solid #0068a0;
-    border-radius: 6px;
+    gap: 5px;
+    flex-shrink: 0;
+    min-height: 30px;
+    padding: 3px 10px;
+    box-sizing: border-box;
+    border: 1px solid #b6d0e2;
+    border-radius: 5px;
     background: #fff;
     color: #005691;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     text-decoration: none;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-#homeLink .material-symbols-outlined { font-size: 20px; }
-#homeLink:hover { background: #e6f2f8; }
+#homeLink .material-symbols-outlined { font-size: 18px; }
+#homeLink:hover { background: #e6f2f8; border-color: #0078c9; }
 #homeLink:focus-visible { outline: 3px solid #ffbf47; outline-offset: 2px; }
 @media (max-width: 640px) {
-    #homeLink { top: 8px; right: 8px; padding: 7px 10px; }
+    #appPanelHeader { padding-inline: 10px; }
 }
